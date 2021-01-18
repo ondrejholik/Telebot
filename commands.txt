@@ -1,0 +1,9 @@
+/help -------
+  return this message
+/w ----------
+  From your last shared location get weather and send it in text/png
+/w set png --
+  Set /w to png weather
+/w set txt
+  Set /w to txt weather
+
