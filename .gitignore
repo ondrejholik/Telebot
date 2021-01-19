@@ -1,1 +1,4 @@
+badger/
 config.toml
+go.sum
+telebot
