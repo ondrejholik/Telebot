@@ -28,6 +28,8 @@ func init() {
 	}
 	defer db.Close()
 
+	//c := context.Background()
+	//con := context.WithValue(c, "db", db)
 }
 
 func main() {
@@ -50,6 +52,7 @@ func main() {
 	// Routes
 	b.Handle("/start", func(m *tele.Message) {
 		//start(m * tele.Message)
+		msg := Start(db, m)
 	})
 
 	// SplitWise
