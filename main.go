@@ -1,23 +1,23 @@
-package main
+package telebot
 
 import (
 	"log"
 	"time"
-  "fmt"
 
-  "github.com/BurntSushi/toml"
+	"github.com/BurntSushi/toml"
 	tele "gopkg.in/tucnak/telebot.v2"
+  "github.com/ondrejholik/telebot/commands"
 )
 
 type Config struct {
-    Token string
+	Token string
 }
 
 func main() {
-  var conf Config
-  if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
-    log.Fatal(err)
-  }
+	var conf Config
+	if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
+		log.Fatal(err)
+	}
 
 	b, err := tele.NewBot(tele.Settings{
 
@@ -30,40 +30,36 @@ func main() {
 		return
 	}
 
-  // Routes
+	// Routes
 
 	b.Handle("/hello", func(m *tele.Message) {
 		b.Send(m.Sender, "Hello World!")
 	})
 
+	// SplitWise
 
-  // SplitWise
+	// Weather with GUI
+	b.Handle("/w", func(m *tele.Message) {
+		if weatherGui() {
 
-  // Weather with GUI
-  b.Handle("/w", func(m *tele.Message) {
-    if weatherGui() {
+		} else {
+			b.Send(m.Sender, weather())
+		}
+	})
 
-    } else {
-      b.Send(m.Sender, weather())
-    }
-  })
+	// Word Count
+	b.Handle("/wc", func(m *tele.Message) {
+		b.Send(m.Sender, Wc(m.Text, true))
+	})
 
-  // Word Count
-  b.Handle("/wc", func(m *tele.Message) {
-    b.Send(m.Sender, wc(m.Text, true))
-  })
+	// QR generator
 
-  // QR generator
+	// Time ( clock svg/png )
 
-  // Time ( clock svg/png )
+	// Other
+	b.Handle(tele.OnText, func(m *tele.Message) {
 
-  // Other
-  b.Handle(tele.OnText, func(m *tele.Message) {
-
-  })
-
-
-
+	})
 
 	b.Start()
 }
