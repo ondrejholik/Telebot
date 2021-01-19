@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"context"
 	"log"
 	"time"
 
@@ -10,25 +10,16 @@ import (
 	tele "gopkg.in/tucnak/telebot.v2"
 )
 
-type Config struct {
+// FileConfig for storing telegram token
+type FileConfig struct {
 	Token string
 }
 
-type Point struct {
-	Lat float64
-	Lon float64
-}
 
-type UserSettings struct {
-	Username           string
-	UserId             string
-	LastLocation       Point
-	LastWeatherRequest int32
-}
 
-func main() {
-	var conf Config
-	db, err := badger.Open(badger.DefaultOptions("./badger/"))
+func init() {
+	var conf FileConfig
+	db, err := badger.Open(badger.DefaultOptions("badger/"))
 	if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
 		log.Fatal(err)
 	}
@@ -44,46 +35,15 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+	// Add variables to context
+
+}
+
+func main() {
 
 	// Routes
 	b.Handle("/start", func(m *tele.Message) {
-		// Does user exists in database?
-		err := db.View(func(txn *badger.Txn) error {
-			item, err := txn.Get([]byte(m.InlineID))
-
-			var valCopy []byte
-			err = item.Value(func(val []byte) error {
-				// Accessing val here is valid.
-				fmt.Printf("The answer is: %s\n", val)
-
-				// Copying or parsing val is valid.
-				valCopy = append([]byte{}, val...)
-
-				return nil
-			})
-			if err != nil {
-				log.Println(err)
-			}
-
-			fmt.Printf("The answer is: %s\n", valCopy)
-			b.Send(m.Sender, valCopy)
-			return nil
-		})
-		if err != nil {
-			log.Panic(err)
-		}
-		// Create user in DB if not exist already
-		/*
-		   err := db.Update(func(txn *badger.Txn) error {
-		     if err != nil {
-		       log.Panic(err)
-		     }
-
-
-		     return nil
-		   })
-		*/
-
+		start(m *tele.Message, )
 	})
 
 	// SplitWise
