@@ -10,20 +10,32 @@ import (
 	tele "gopkg.in/tucnak/telebot.v2"
 )
 
+// Get rid off global variable
+var db *badger.DB
+
 // FileConfig for storing telegram token
 type FileConfig struct {
 	Token string
 }
 
-
-
 func init() {
+	var err error
+	db, err = badger.Open(badger.DefaultOptions("badger/"))
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer db.Close()
+
+}
+
+func main() {
+
 	var conf FileConfig
-	db, err := badger.Open(badger.DefaultOptions("badger/"))
 	if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 
 	b, err := tele.NewBot(tele.Settings{
 
@@ -35,15 +47,9 @@ func init() {
 		log.Fatal(err)
 		return
 	}
-	// Add variables to context
-
-}
-
-func main() {
-
 	// Routes
 	b.Handle("/start", func(m *tele.Message) {
-		start(m *tele.Message, )
+		//start(m * tele.Message)
 	})
 
 	// SplitWise
