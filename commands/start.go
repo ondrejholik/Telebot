@@ -25,6 +25,7 @@ type UserSettings struct {
 // Start initialize user(put user data to BadgerDB)
 func Start(db *badger.DB, m *tele.Message) string {
 
+  log.Println("Someone trigger start")
 	//db := ctx.Value("db")
 	var status string
 	// Does user exists in database?
@@ -33,6 +34,7 @@ func Start(db *badger.DB, m *tele.Message) string {
 		_, err := txn.Get([]byte(userid))
 		if err != nil {
 			// User doesnt exist
+      log.Println("User does not exists")
 			err := db.Update(func(txn *badger.Txn) error {
 				userset := &UserSettings{
 					Username: m.Sender.Username,
@@ -54,8 +56,9 @@ func Start(db *badger.DB, m *tele.Message) string {
 			if err != nil {
 				log.Println("User does not exists, creating new user")
 			}
-		}
-		status = "Your are already in our database"
+		} else {
+		  status = "Your are already in our database"
+    }
 		return nil
 
 	})

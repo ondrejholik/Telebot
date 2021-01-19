@@ -1,10 +1,10 @@
 package telebot
 
 import (
-	//"context"
 	"log"
 	"time"
 
+  cmd "github.com/ondrejholik/telebot/commands"
 	"github.com/BurntSushi/toml"
 	badger "github.com/dgraph-io/badger"
 	tele "gopkg.in/tucnak/telebot.v2"
@@ -51,24 +51,24 @@ func main() {
 	}
 	// Routes
 	b.Handle("/start", func(m *tele.Message) {
-		//start(m * tele.Message)
-		msg := Start(db, m)
+		msg := cmd.Start(db, m)
+    b.Send(m.Sender, msg)
 	})
 
 	// SplitWise
 
 	// Weather with GUI
 	b.Handle("/w", func(m *tele.Message) {
-		if WeatherGui() {
+		if cmd.WeatherGui() {
 
 		} else {
-			b.Send(m.Sender, Weather())
+			b.Send(m.Sender, cmd.Weather())
 		}
 	})
 
 	// Word Count
 	b.Handle("/wc", func(m *tele.Message) {
-		b.Send(m.Sender, Wc(m.Text, true))
+		b.Send(m.Sender, cmd.Wc(m.Text, true))
 	})
 
 	// QR generator
