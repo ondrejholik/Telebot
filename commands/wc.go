@@ -1,4 +1,4 @@
-package main
+package telebot
 
 import (
   "os"
@@ -9,7 +9,8 @@ import (
   "strconv"
 )
 
-func wc(text string, prod bool) string {
+// Wc get number of words
+func Wc(text string, prod bool) string {
   scanner := bufio.NewScanner(strings.NewReader(text))
   scanner.Split(ScanWords)
 

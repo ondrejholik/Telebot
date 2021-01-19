@@ -1,4 +1,4 @@
-package main
+package telebot
 
 import (
 	"encoding/json"
