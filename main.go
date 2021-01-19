@@ -1,4 +1,4 @@
-package main
+package telebot
 
 import (
 	//"context"
@@ -56,27 +56,25 @@ func main() {
 
 	// Weather with GUI
 	b.Handle("/w", func(m *tele.Message) {
-		if weatherGui() {
+		if WeatherGui() {
 
 		} else {
-			b.Send(m.Sender, weather())
+			b.Send(m.Sender, Weather())
 		}
 	})
 
 	// Word Count
 	b.Handle("/wc", func(m *tele.Message) {
-		b.Send(m.Sender, wc(m.Text, true))
+		b.Send(m.Sender, Wc(m.Text, true))
 	})
 
 	// QR generator
-	b.Handle("/qr", func(m *tele.Message) {
-		//b.Send(m.Sender, qr(m.Text))
-	})
 
 	// Time ( clock svg/png )
 
 	// Other
 	b.Handle(tele.OnText, func(m *tele.Message) {
+
 	})
 
 	b.Start()
