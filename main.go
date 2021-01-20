@@ -30,7 +30,7 @@ func main() {
 	defer db.Close()
 
 	if !misc.AreVillagesInDB(db) {
-		misc.LoadVillages(db)
+		misc.LoadVillagesToDB(db)
 	}
 
 	var conf FileConfig
