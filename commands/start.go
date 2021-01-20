@@ -24,49 +24,66 @@ type UserSettings struct {
 
 // Start initialize user(put user data to BadgerDB)
 func Start(db *badger.DB, m *tele.Message) string {
-
-  log.Println("Someone trigger start")
-	//db := ctx.Value("db")
-	var status string
 	// Does user exists in database?
-	err := db.View(func(txn *badger.Txn) error {
-		userid := strconv.Itoa(m.Sender.ID)
-		_, err := txn.Get([]byte(userid))
+	userid := strconv.Itoa(m.Sender.ID)
+	userexists := UserExists(db, userid)
+	var msg string
+
+	// If user exists, then print something and end
+	if userexists {
+		msg = "You are already in our database. Have a nice day!"
+	} else {
+		CreateNewUser(userid, db, m)
+		msg = "You are now successfuly in our database."
+	}
+	return msg
+}
+
+// CreateNewUser -> add user with key userid to badgerdB
+func CreateNewUser(userid string, db *badger.DB, m *tele.Message) {
+	err := db.Update(func(txn *badger.Txn) error {
+		userset := &UserSettings{
+			Username: m.Sender.Username,
+			LastLocation: Point{
+				Lat: 0.0,
+				Lon: 0.0,
+			},
+			LastWeatherRequest: 0,
+		}
+		encoded, err := json.Marshal(userset)
 		if err != nil {
-			// User doesnt exist
-      log.Println("User does not exists")
-			err := db.Update(func(txn *badger.Txn) error {
-				userset := &UserSettings{
-					Username: m.Sender.Username,
-					LastLocation: Point{
-						Lat: 0.0,
-						Lon: 0.0,
-					},
-					LastWeatherRequest: 0,
-				}
-				encoded, err := json.Marshal(userset)
-				if err != nil {
-					return err
-				}
+			log.Println("Error when encoding json")
+			log.Println(err)
+			return err
+		}
 
-				err = txn.Set([]byte(userid), []byte(encoded))
-				status = "Success, your are now initialized in our database"
-				return err
-			})
-			if err != nil {
-				log.Println("User does not exists, creating new user")
-			}
-		} else {
-		  status = "Your are already in our database"
-    }
-		return nil
+		e := badger.NewEntry([]byte(userid), []byte(encoded))
+		err = txn.SetEntry(e)
+		if err != nil {
+			log.Println("Error, when set json value to user")
+			log.Println(err)
+		}
 
+		return err
 	})
 	if err != nil {
-		log.Println("Error view db")
 		log.Println(err)
 	}
+}
 
-	return status
+// UserExists check if user exists in badgerDB
+func UserExists(db *badger.DB, userid string) bool {
+	var found = true
+	err := db.View(func(txn *badger.Txn) error {
+		_, err := txn.Get([]byte(userid))
+		if err != nil {
+			found = false
+		}
+		return nil
+	})
+	if err != nil {
+		return false
+	}
 
+	return found
 }

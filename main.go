@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-  cmd "github.com/ondrejholik/telebot/commands"
 	"github.com/BurntSushi/toml"
 	badger "github.com/dgraph-io/badger"
+	cmd "github.com/ondrejholik/telebot/commands"
 	tele "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -18,8 +18,8 @@ type FileConfig struct {
 	Token string
 }
 
-func init() {
-	var err error
+func main() {
+  var err error
 	db, err = badger.Open(badger.DefaultOptions("badger/"))
 
 	if err != nil {
@@ -27,12 +27,6 @@ func init() {
 		return
 	}
 	defer db.Close()
-
-	//c := context.Background()
-	//con := context.WithValue(c, "db", db)
-}
-
-func main() {
 
 	var conf FileConfig
 	if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
@@ -52,7 +46,7 @@ func main() {
 	// Routes
 	b.Handle("/start", func(m *tele.Message) {
 		msg := cmd.Start(db, m)
-    b.Send(m.Sender, msg)
+		b.Send(m.Sender, msg)
 	})
 
 	// SplitWise
