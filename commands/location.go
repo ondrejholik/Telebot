@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	badger "github.com/dgraph-io/badger"
+	misc "github.com/ondrejholik/telebot/misc"
 	tele "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -27,7 +28,8 @@ func UpdateLocationDB(db *badger.DB, m *tele.Message, userid string, p Point) st
 
 // LocationInfo info about city you are currently in
 func LocationInfo(db *badger.DB, p Point) string {
-	return "City: "
+	closest := misc.ClosestVillage(db, p)
+	return "Closest: " + closest
 }
 
 /*
