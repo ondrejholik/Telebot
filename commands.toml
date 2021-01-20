@@ -1,0 +1,8 @@
+[help]
+  info = "return this message"
+[w]
+  info = "From your last shared location get weather and send it in text/png"
+  params [
+    ["set txt", "set weather to text form"]
+    ["set png", "set weather to png output form"]
+  ]
