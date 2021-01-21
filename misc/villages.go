@@ -51,7 +51,7 @@ func AreVillagesInDB(db *badger.DB) bool {
 func ClosestVillage(db *badger.DB, lat float32, lon float32) string {
 
 	log.Println("Getting villages")
-	var villagesJsonCopy []byte
+	var villagesJSONCopy []byte
 	var villages VillageArr
 	err := db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get([]byte("villages"))
@@ -60,7 +60,7 @@ func ClosestVillage(db *badger.DB, lat float32, lon float32) string {
 			log.Panic(err)
 		}
 		err = item.Value(func(val []byte) error {
-			villagesJsonCopy = append([]byte{}, val...)
+			villagesJSONCopy = append([]byte{}, val...)
 			return err
 		})
 
@@ -70,7 +70,7 @@ func ClosestVillage(db *badger.DB, lat float32, lon float32) string {
 		log.Panic(err)
 	}
 
-	err = json.Unmarshal(villagesJsonCopy, &villages)
+	err = json.Unmarshal(villagesJSONCopy, &villages)
 	if err != nil {
 		log.Println(err)
 	}
@@ -79,7 +79,7 @@ func ClosestVillage(db *badger.DB, lat float32, lon float32) string {
 	var current float32
 	minDistance := float32(math.Inf(1))
 	for _, x := range villages.Arr {
-		current = HarvestineDistance(x.Point, Gps{Lat: lat, Lon: lon})
+		current = harvestineDistance(x.Point, Gps{Lat: lat, Lon: lon})
 		if current < minDistance {
 			closestVillage = x
 			minDistance = current
@@ -92,7 +92,7 @@ func degreesToRadians(d float32) float64 {
 	return float64(d) * math.Pi / 180
 }
 
-func HarvestineDistance(x, y Gps) float32 {
+func harvestineDistance(x, y Gps) float32 {
 	const earthRaidusKm = 6371
 	lat1 := degreesToRadians(x.Lat)
 	lon1 := degreesToRadians(x.Lon)
