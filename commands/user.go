@@ -97,7 +97,7 @@ func UserExists(db *badger.DB, userid string) bool {
 func GetUserSettings(db *badger.DB, userid string) UserSettings {
 	var userset UserSettings
 	err := db.View(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte("answer"))
+		item, err := txn.Get([]byte(userid))
 		if err != nil {
 			log.Println(err)
 		}
