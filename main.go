@@ -30,6 +30,8 @@ func main() {
 	defer db.Close()
 
 	if !misc.AreVillagesInDB(db) {
+		log.Println("Villages not int DB")
+		log.Println("Adding villages to DB")
 		misc.LoadVillagesToDB(db)
 	}
 
@@ -77,6 +79,11 @@ func main() {
 	// Other
 	b.Handle(tele.OnText, func(m *tele.Message) {
 
+	})
+
+	// On Location
+	b.Handle(tele.OnLocation, func(m *tele.Message) {
+		b.Send(m.Sender, cmd.LocationHandler(db, m))
 	})
 
 	b.Start()

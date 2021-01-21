@@ -3,9 +3,11 @@ package telebot
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 
@@ -47,7 +49,67 @@ func AreVillagesInDB(db *badger.DB) bool {
 
 // ClosestVillage find closest village to point
 func ClosestVillage(db *badger.DB, lat float32, lon float32) string {
-	return "a"
+
+	log.Println("Getting villages")
+	var villagesJsonCopy []byte
+	var villages VillageArr
+	err := db.View(func(txn *badger.Txn) error {
+		item, err := txn.Get([]byte("villages"))
+		if err != nil {
+			log.Println("Villages not found")
+			log.Panic(err)
+		}
+		err = item.Value(func(val []byte) error {
+			villagesJsonCopy = append([]byte{}, val...)
+			return err
+		})
+
+		return err
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = json.Unmarshal(villagesJsonCopy, &villages)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var closestVillage Village
+	var current float32
+	minDistance := float32(math.Inf(1))
+	for _, x := range villages.Arr {
+		current = HarvestineDistance(x.Point, Gps{Lat: lat, Lon: lon})
+		if current < minDistance {
+			closestVillage = x
+			minDistance = current
+		}
+	}
+	return fmt.Sprintf("Your new location has been set to:\n%s which is %g km from you", closestVillage.Name, minDistance)
+}
+
+func degreesToRadians(d float32) float64 {
+	return float64(d) * math.Pi / 180
+}
+
+func HarvestineDistance(x, y Gps) float32 {
+	const earthRaidusKm = 6371
+	lat1 := degreesToRadians(x.Lat)
+	lon1 := degreesToRadians(x.Lon)
+	lat2 := degreesToRadians(y.Lat)
+	lon2 := degreesToRadians(y.Lon)
+
+	diffLat := lat2 - lat1
+	diffLon := lon2 - lon1
+
+	a := math.Pow(math.Sin(diffLat/2), 2) + math.Cos(lat1)*math.Cos(lat2)*
+		math.Pow(math.Sin(diffLon/2), 2)
+
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	km := c * earthRaidusKm
+
+	return float32(km)
 }
 
 // ParseToVillage take slice of string splitted by delimiter and convert to Village struct
@@ -104,4 +166,5 @@ func LoadVillagesToDB(db *badger.DB) {
 	if err != nil {
 		log.Panic(err)
 	}
+	log.Println("Villages in DB")
 }
