@@ -28,7 +28,7 @@ func UpdateLocationDB(db *badger.DB, m *tele.Message, userid string, p Point) st
 
 // LocationInfo info about city you are currently in
 func LocationInfo(db *badger.DB, p Point) string {
-	closest := misc.ClosestVillage(db, p)
+	closest := misc.ClosestVillage(db, p.Lat, p.Lon)
 	return "Closest: " + closest
 }
 

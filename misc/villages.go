@@ -2,7 +2,9 @@ package telebot
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"io"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
@@ -10,10 +12,21 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
+// Gps struct with Latitude, Longtitude
+type Gps struct {
+	Lat float32
+	Lon float32
+}
+
 // Village name, gps point lat, lon
 type Village struct {
-	name  string
-	point Point
+	Name  string
+	Point Gps
+}
+
+// VillageArr is there only, because json.Marshal
+type VillageArr struct {
+	Arr []Village
 }
 
 // AreVillagesInDB -- check if villages has been initialized(if exists)
@@ -29,23 +42,39 @@ func AreVillagesInDB(db *badger.DB) bool {
 	if err != nil {
 		return false
 	}
-
 	return found
 }
 
 // ClosestVillage find closest village to point
-func ClosestVillage(db *badger.DB, p Point) string {
+func ClosestVillage(db *badger.DB, lat float32, lon float32) string {
 	return "a"
 }
 
+// ParseToVillage take slice of string splitted by delimiter and convert to Village struct
 func ParseToVillage(row []string) Village {
-	return Village{row[0], Point{Lat: strconv.Itoa(row[1]), Lon: strconv.Itoa(row[2])}}
+	var lat, lon float32
+	val, err := strconv.ParseFloat(row[1], 32)
+	if err != nil {
+		log.Println(err)
+	}
+	lat = float32(val)
+	val, err = strconv.ParseFloat(row[2], 32)
+	if err != nil {
+		log.Println(err)
+	}
+	lon = float32(val)
+	return Village{Name: row[0], Point: Gps{Lat: lat, Lon: lon}}
 }
 
+// LoadVillagesToDB load to badgerDB
 func LoadVillagesToDB(db *badger.DB) {
 	var villages []Village
 
-	r := csv.NewReader(strings.NewReader(in))
+	dat, err := ioutil.ReadFile("assets/villages.csv")
+	if err != nil {
+		log.Panic(err)
+	}
+	r := csv.NewReader(strings.NewReader(string(dat)))
 	r.Comma = ';'
 
 	for {
@@ -61,8 +90,15 @@ func LoadVillagesToDB(db *badger.DB) {
 		villages = append(villages, village)
 	}
 
-	err := db.Update(func(txn *badger.Txn) error {
-		err := txn.Set([]byte("villages"), []byte(json.Marshall(villages)))
+	err = db.Update(func(txn *badger.Txn) error {
+		vlgsStruct := &VillageArr{
+			Arr: villages,
+		}
+		encoded, err := json.Marshal(vlgsStruct)
+		if err != nil {
+			log.Println(err)
+		}
+		err = txn.Set([]byte("villages"), []byte(encoded))
 		return err
 	})
 	if err != nil {
