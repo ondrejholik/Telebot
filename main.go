@@ -7,6 +7,7 @@ import (
 	"github.com/BurntSushi/toml"
 	badger "github.com/dgraph-io/badger"
 	cmd "github.com/ondrejholik/telebot/commands"
+	misc "github.com/ondrejholik/telebot/misc"
 	tele "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -19,7 +20,7 @@ type FileConfig struct {
 }
 
 func main() {
-  var err error
+	var err error
 	db, err = badger.Open(badger.DefaultOptions("badger/"))
 
 	if err != nil {
@@ -27,6 +28,10 @@ func main() {
 		return
 	}
 	defer db.Close()
+
+	if !misc.AreVillagesInDB(db) {
+		misc.LoadVillagesToDB(db)
+	}
 
 	var conf FileConfig
 	if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
