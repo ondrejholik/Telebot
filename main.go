@@ -51,6 +51,9 @@ func main() {
 		return
 	}
 	// Routes
+	/////////
+
+	// Start
 	b.Handle("/start", func(m *tele.Message) {
 		msg := cmd.Start(db, m)
 		b.Send(m.Sender, msg)
@@ -70,6 +73,11 @@ func main() {
 	// Word Count
 	b.Handle("/wc", func(m *tele.Message) {
 		b.Send(m.Sender, cmd.Wc(m.Text, true))
+	})
+
+	// Birthdays reminder
+	b.Handle("/bd", func(m *tele.Message) {
+		b.Send(m.Sender, cmd.Bd())
 	})
 
 	// QR generator

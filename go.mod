@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/bradfitz/slice v0.0.0-20180809154707-2b758aa73013
 	github.com/cweill/gotests v1.6.0 // indirect
 	github.com/dgraph-io/badger v1.6.2
 	github.com/go-delve/delve v1.5.1 // indirect
