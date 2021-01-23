@@ -16,7 +16,7 @@ func Start(db *badger.DB, m *tele.Message) string {
 
 	// If user exists, then print something and end
 	if userexists {
-		msg = "You are already in our database. Have a nice day!"
+		msg = "You are already in our database."
 	} else {
 		CreateNewUser(userid, db, m)
 		msg = "You are now successfuly in our database."

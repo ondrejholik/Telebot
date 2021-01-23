@@ -2,3 +2,4 @@ badger/
 config.toml
 go.sum
 telebot
+assets/birthdays.csv
