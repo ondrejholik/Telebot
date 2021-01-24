@@ -16,8 +16,8 @@
 ## Commands
 - /start -- initialize your info into database
 - /bd -- birthdays 
-[] /w -- weather based on location
-[] /s -- split
+- [ ] /w -- weather based on location
+- [ ] /s -- split
 
 ## Other features
 - Send location -- set location to your coordinates
