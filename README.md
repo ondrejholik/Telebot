@@ -5,7 +5,7 @@
 ## Install
 
 *   Build from source
-*   Prerequisite -> go version 1.14.0
+*   Prerequisite -> go version 1.14.0, Telegram account(generated bot token @botfather)
 *   `git clone https://github.com/ondrejholik/telebot`
 *   `cd telebot`
 *   `go build`
