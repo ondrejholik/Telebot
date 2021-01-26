@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -78,6 +79,20 @@ func main() {
 	// Birthdays reminder
 	b.Handle("/bd", func(m *tele.Message) {
 		b.Send(m.Sender, cmd.Bd())
+	})
+
+	// Youtube download
+	b.Handle("/yt", func(m *tele.Message) {
+		path, err := cmd.YtDownload(m.Text)
+		if err != nil {
+			b.Send(m.Sender, fmt.Sprintf("Not valid link(error)\n"))
+		}
+		p := &tele.Video{File: tele.FromDisk(path)}
+		_, err = b.Send(m.Sender, p)
+		if err != nil {
+			b.Send(m.Sender, fmt.Sprint("Something break when sending:\n"))
+		}
+
 	})
 
 	// QR generator
