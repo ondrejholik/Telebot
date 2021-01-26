@@ -29,8 +29,8 @@ func YtDownload(command string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	file, err := os.Create(fmt.Sprintf("tmp/%s.mp4", videoID))
-	path = fmt.Sprintf("tmp/%s.mp4", videoID)
+	file, err := os.Create(fmt.Sprintf("tmp/%s.mp4", video.ID))
+	path = fmt.Sprintf("tmp/%s.mp4", video.ID)
 	if err != nil {
 		panic(err)
 		return "", err
