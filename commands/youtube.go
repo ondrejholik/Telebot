@@ -22,7 +22,7 @@ func YtDownload(command string) (string, error) {
 		return "", err
 	}
 
-	resp, err := client.GetStream(video, &video.Formats[3])
+	resp, err := client.GetStream(video, &video.Formats[2])
 	if err != nil {
 		panic(err)
 		return "", err

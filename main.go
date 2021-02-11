@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -91,8 +92,9 @@ func main() {
 		_, err = b.Send(m.Sender, p)
 		if err != nil {
 			b.Send(m.Sender, fmt.Sprint("Something break when sending:\n"))
+		} else {
+			go os.Remove(path)
 		}
-
 	})
 
 	// QR generator
