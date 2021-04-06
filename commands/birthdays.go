@@ -25,10 +25,7 @@ type Date struct {
 }
 
 func isCountable(sign string) bool {
-	if sign == "1" {
-		return true
-	}
-	return false
+	return sign == "1"
 }
 
 func parseToDate(record []string) Date {
@@ -62,18 +59,19 @@ func date(year, month, day int) time.Time {
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }
 
-func sign(m1, d1, m2, d2 int) int {
-	if m1 != m2 {
-		if m1 < m2 {
+func sign(todayMonth, todayDay, m2, d2 int) int {
+	if todayMonth != m2 {
+		if todayMonth < m2 {
 			return 1
 		}
 		return -1
 	}
 
-	if d1 < d2 {
-		return -1
+	if todayDay <= d2 {
+		return 1
 	}
-	return 1
+
+	return -1
 }
 
 func yearDiff(y1, m1, d1 int) int {
@@ -95,13 +93,13 @@ func yearDiff(y1, m1, d1 int) int {
 
 func fromToday(day, month, year int) int {
 	today := time.Now()
-	date := date(year, month, day)
+	date := date(2021, month, day)
 	m2 := today.Month()
 	d2 := today.Day()
-	sgn := sign(month, day, int(m2), d2)
-	sub := sgn * (int((today.Sub(date).Hours() / 24)) % 365)
+	sgn := sign(int(m2), d2, month, day)
+	sub := (int((date.Sub(today).Hours() / 24.0)) % 365)
 	if sgn == -1 {
-		sub = 365 + sub
+		sub = sgn*(int((today.Sub(date).Hours()/24.0))%365) + 365
 	}
 	return sub
 }
